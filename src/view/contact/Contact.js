@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { 
+  BackHandler,
   FlatList, 
   Image, 
   SafeAreaView, 
@@ -7,6 +8,7 @@ import {
   TouchableOpacity, 
   View } from 'react-native';
 import { connect } from 'react-redux';
+import HeaderContact from '../../component/component-header/Header';
 import {
   getContact,
   detailContact
@@ -37,14 +39,15 @@ function Contact({
     try {
       await detailContact(id);
       navigation.navigate('DetailContact');
-
     } catch (error) {
       console.log(error);
     }
   }
   const renderItem = (item) => {
     return(
-      <TouchableOpacity onPress={()=>handleDetail(item?.id)} style={styleds.listContainer}>
+      <TouchableOpacity 
+        onPress={()=>handleDetail(item?.id)} 
+          style={styleds.listContainer}>
         <View style={styleds.listImageContainer}>
           <Image style={styleds.listImage} source={{uri:item?.photo}}/>
         </View>
@@ -53,7 +56,15 @@ function Contact({
             <Text style={styleds.txtNameContact}>{item?.firstName}</Text>
             <Text style={styleds.txtNameContact}>{item?.lastName}</Text>
           </View>
-          <Text style={styleds.txtAgeContact}>Age : {item?.age}</Text>
+          <View style={{
+            justifyContent:'center',
+            alignItems:'center',
+            backgroundColor: item?.age % 2 == 0 ? '#ff3399' : '#7CFC00',
+            width:100,
+            borderRadius:30
+          }}>
+            <Text style={styleds.txtAgeContact}>Age : {item?.age}</Text>
+          </View>
         </View>
       </TouchableOpacity>
     )
@@ -63,6 +74,10 @@ function Contact({
       backgroundColor:'white',
       flex:1
     }}>
+      <HeaderContact
+      title={'Contact'}
+      goBack={()=> BackHandler.exitApp()}
+      />
       <FlatList
         style={{flex:1}}
         data={ContactReducer.list_contact}

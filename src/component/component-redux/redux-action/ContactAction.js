@@ -10,6 +10,7 @@ const headers = {
   "content-type": "application/json; charset=utf-8",
 }
 
+
 export const getContact = () => async (dispatch) => {
   try {
     const result = await axios.get(CONTACT_API, headers);
@@ -34,12 +35,15 @@ export const detailContact = (id) => async (dispatch) => {
 };
 export const addContact = (data) => async (dispatch) => {
   try {
-    const result = await axios.post(CONTACT_API, data, headers);
+    const result = await axios.post(CONTACT_API, data, headers );
     dispatch(popUp(
       {type: 'success', message: result.data.message}
     ));
   } catch (error) {
     console.log(error);
+    dispatch(popUp(
+      {type: 'danger', message: 'Server Error !'}
+    ));
   }
 };
 export const deleteContact = (id) => async (dispatch) => {

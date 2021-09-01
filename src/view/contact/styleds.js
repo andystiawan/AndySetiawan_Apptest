@@ -8,8 +8,7 @@ export const styleds = StyleSheet.create({
     paddingHorizontal:5,
     margin: 5,
     minHeight: 75,
-    backgroundColor: '#f2f2f2',
-    borderWidth: 0.2,
+    backgroundColor: '#f0f8ff',
     width:'95%',
     alignSelf:'center',
     shadowColor: "#000",
@@ -44,7 +43,8 @@ export const styleds = StyleSheet.create({
   },
   txtAgeContact:{
     fontSize: 12,
-    marginHorizontal:5
+    margin:5,
+    fontWeight:'700'
   },
   addContactContainer:{
     width:55,

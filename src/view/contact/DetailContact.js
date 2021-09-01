@@ -16,6 +16,7 @@ import {
   deleteContact,
 } from '../../component/component-redux/redux-action/ContactAction';
 import AlertMessage from '../../component/component-alert/AlertMessage';
+import HeaderContact from '../../component/component-header/Header';
 
 function DetailContact({
   ContactReducer, 
@@ -67,6 +68,10 @@ function DetailContact({
       flex:1,
       backgroundColor:'white'
     }}>
+      <HeaderContact
+        title={'Details Contact'}
+        goBack={()=> navigation.goBack()}
+      />
       <ScrollView contentContainerStyle={{
         alignItems:'center',
         justifyContent:'center'

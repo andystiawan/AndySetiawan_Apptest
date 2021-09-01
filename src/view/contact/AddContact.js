@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { 
+  Image,
   SafeAreaView, 
   ScrollView, 
   Text, 
   TextInput, 
-  TouchableOpacity } from 'react-native';
+  TouchableOpacity, 
+  View} from 'react-native';
 import { connect } from 'react-redux';
 import { styleds } from './styleds';
 import {
@@ -12,6 +14,9 @@ import {
   getContact, 
   closePopUp} from '../../component/component-redux/redux-action/ContactAction';
 import AlertMessage from '../../component/component-alert/AlertMessage';
+import HeaderContact from '../../component/component-header/Header';
+import UploadImage from '../../component/component-upload-image/UploadImage';
+import imgIcon from '../../assets/add-assets/camera.png';
 
 function AddContact({
   addContact, 
@@ -23,11 +28,23 @@ function AddContact({
     firstName : "",
     lastName : "",
     age : "",
-    photo: "https://picsum.photos/200/300"
+    photo: "",
   };
+  const [upload, setupload] = useState(false);
   const [data, setData] = useState(addData);
   const handleSave = () => {
-    addContact(data)
+    // const formData = new FormData();
+    // formData.append('photo', data.photo);
+    // formData.append('firstName', data.firstName);
+    // formData.append('lastName', data.lastName);
+
+    const addData = {
+      firstName : data.firstName,
+      lastName : data.firstName,
+      age : data.firstName,
+      photo: "https://picsum.photos/200",
+    }
+    addContact(formData);
   };
   const handleClose = async() => {
     try {
@@ -38,14 +55,45 @@ function AddContact({
       console.log(error);
     }
   };
+  const handlePhoto = (e) => {
+    setData(prev => ({...prev, photo: e}));
+  };
   return(
     <SafeAreaView 
       style={{ 
         flex:1,
         backgroundColor:'white'}}>
+      <HeaderContact
+        title={'Add Contact'}
+        goBack={()=> navigation.goBack()}
+      />
       <ScrollView contentContainerStyle={{
         alignItems:'center',
         margin:5}}>
+        <View style={{
+          width:200,
+          height:200,
+          margin:5,
+          borderWidth:1,
+          borderRadius:100
+        }}>
+          <Image style={{
+            resizeMode:'cover',
+            borderRadius:100,
+            width:'100%',
+            height:'100%'
+          }} 
+          source={{uri: data.photo?.uri}}
+          />
+        </View>
+        <TouchableOpacity onPress={()=>setupload(true)}>
+          <Image 
+            style={{
+              width: 50,
+              height: 50, 
+            }}
+            source={imgIcon}/>
+        </TouchableOpacity>
         <TextInput 
           keyboardType="default"
           placeholder="First name"
@@ -84,11 +132,14 @@ function AddContact({
         </TouchableOpacity>
       </ScrollView>
       <AlertMessage
-      open={ContactReducer.show}
-      type={ContactReducer.message?.type}
-      message={ContactReducer.message?.message}
-      action={handleClose}
-      />
+        open={ContactReducer.show}
+        type={ContactReducer.message?.type}
+        message={ContactReducer.message?.message}
+        action={handleClose}/>
+      <UploadImage
+        setResponse={(e) => handlePhoto(e)}
+        visible={upload}
+        close={()=>setupload(false)}/>
     </SafeAreaView>
   )
 }
