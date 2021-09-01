@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { 
+  ActivityIndicator,
   Image, 
   SafeAreaView, 
   ScrollView, 
@@ -14,9 +15,12 @@ import {
   closePopUp,
   getContact,
   deleteContact,
+  uploadImage,
 } from '../../component/component-redux/redux-action/ContactAction';
 import AlertMessage from '../../component/component-alert/AlertMessage';
 import HeaderContact from '../../component/component-header/Header';
+import imgIcon from '../../assets/add-assets/camera.png';
+import UploadImage from '../../component/component-upload-image/UploadImage';
 
 function DetailContact({
   ContactReducer, 
@@ -24,20 +28,21 @@ function DetailContact({
   navigation,
   closePopUp, 
   deleteContact,
+  uploadImage,
   getContact}){
   const detail = ContactReducer.detail_contact;
   const initialState = {
     edit : false,
     firstName : detail?.firstName,
     lastName: detail?.lastName,
-    age: detail?.age
+    age: detail?.age,
+    photo: detail?.photo,
+    loadingImg: false,
   }
+  const [upload, setupload] = useState(false);
   const [state, setstate] = useState(initialState);
   const inputStyle = {
-    width:'80%',
-    borderRadius:10,
-    backgroundColor: state.edit ? '#99ffcc' : 'grey',
-    margin:5
+    backgroundColor: state.edit ? 'aquamarine' : '#f2f2f2',
   }
   const handleEdit = () => {
     setstate(p => ({...p,edit: !state.edit}));
@@ -47,7 +52,7 @@ function DetailContact({
       firstName: state.firstName,
       lastName: state.lastName,
       age: state.age,
-      photo: 'https://picsum.photos/200/300'
+      photo: state.photo
     }
     updateContact(data, detail?.id);
   }
@@ -61,8 +66,23 @@ function DetailContact({
     }
   };
   const handleHapus = async() => {
-    deleteContact(detail?.id);
-  }
+    await deleteContact(detail.id);
+  };
+  const handlePhoto = async(e) => {
+    const formData = new FormData();
+    formData.append('image', e)
+    try {
+      setstate(p => ({...p, loadingImg:true}));
+      await uploadImage({
+        item: formData,
+        name: state.firstName || "Profile",
+        response : (res) => setstate(p => ({...p, photo: res.url}))
+      });
+      setstate(p => ({...p, loadingImg:false}));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return(
     <SafeAreaView style={{
       flex:1,
@@ -77,38 +97,50 @@ function DetailContact({
         justifyContent:'center'
       }}>
         <View style={{
-            width:150,
-            height:150,
-            margin:10,
-            borderWidth: 1,
-            borderRadius:100
+          width:200,
+          height:200,
+          margin:5,
+          borderWidth:1,
+          borderColor:'aqua',
+          borderRadius:100,
+          alignItems:'center',
+          justifyContent:'center'
         }}>
-          <Image
-           source={{uri: detail?.photo}}
-           style={{
-            resizeMode:'cover',
-            borderRadius: 100,
-            borderWidth: 1,
-            width:'100%',
-            height:'100%'
-            
-          }}/>
+          {state.loadingImg ? 
+            <ActivityIndicator size={'large'} color="cyan" /> : 
+            <Image style={{
+              resizeMode:'cover',
+              borderRadius:100,
+              width:'100%',
+              height:'100%'
+            }} 
+            source={{uri: state.photo}}
+            />
+          }
         </View>
-        <View style={inputStyle}>
+        <TouchableOpacity disabled={!state.edit} onPress={()=>setupload(true)}>
+          <Image 
+            style={{
+              width: 50,
+              height: 50, 
+            }}
+            source={imgIcon}/>
+        </TouchableOpacity>
+        <View style={[inputStyle, styleds.txtInputEdit]}>
           <TextInput
            editable={state.edit}
            placeholder={detail?.firstName}
            onChangeText={(e)=> setstate(p => ({...p,firstName:e}))}
            value={state.firstName}/>
         </View>
-        <View style={inputStyle}>
+        <View style={[inputStyle, styleds.txtInputEdit]}>
           <TextInput
            editable={state.edit}
            placeholder={detail?.lastName}
            onChangeText={(e)=> setstate(p => ({...p,lastName:e}))}
            value={state.lastName}/>
         </View>
-        <View style={inputStyle}>
+        <View style={[inputStyle, styleds.txtInputEdit]}>
           <TextInput
            editable={state.edit}
            placeholder={detail?.age.toString()}
@@ -163,6 +195,10 @@ function DetailContact({
       message={ContactReducer.message?.message}
       action={handleClose}
       />
+       <UploadImage
+        setResponse={(e) => handlePhoto(e)}
+        visible={upload}
+        close={()=>setupload(false)}/>
     </SafeAreaView>
   )
 }
@@ -175,7 +211,8 @@ const mapDispatchToProps = {
   updateContact,
   closePopUp,
   getContact,
-  deleteContact
+  deleteContact,
+  uploadImage
 }
 
 export default connect(mapStateToProps, mapDispatchToProps) (DetailContact);

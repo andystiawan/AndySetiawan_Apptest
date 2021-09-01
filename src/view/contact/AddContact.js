@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { 
+  ActivityIndicator,
   Image,
   SafeAreaView, 
   ScrollView, 
@@ -12,7 +13,8 @@ import { styleds } from './styleds';
 import {
   addContact, 
   getContact, 
-  closePopUp} from '../../component/component-redux/redux-action/ContactAction';
+  closePopUp,
+  uploadImage} from '../../component/component-redux/redux-action/ContactAction';
 import AlertMessage from '../../component/component-alert/AlertMessage';
 import HeaderContact from '../../component/component-header/Header';
 import UploadImage from '../../component/component-upload-image/UploadImage';
@@ -23,28 +25,25 @@ function AddContact({
   ContactReducer, 
   getContact, 
   closePopUp, 
+  uploadImage,
   navigation}){
-  const addData = {
+  const initialState = {
     firstName : "",
     lastName : "",
     age : "",
     photo: "",
+    loadingImg: false
   };
   const [upload, setupload] = useState(false);
-  const [data, setData] = useState(addData);
+  const [data, setData] = useState(initialState);
   const handleSave = () => {
-    // const formData = new FormData();
-    // formData.append('photo', data.photo);
-    // formData.append('firstName', data.firstName);
-    // formData.append('lastName', data.lastName);
-
-    const addData = {
+    const add = {
       firstName : data.firstName,
       lastName : data.firstName,
-      age : data.firstName,
-      photo: "https://picsum.photos/200",
+      age : data.age,
+      photo: data.photo?.url,
     }
-    addContact(formData);
+    addContact(add);
   };
   const handleClose = async() => {
     try {
@@ -55,8 +54,20 @@ function AddContact({
       console.log(error);
     }
   };
-  const handlePhoto = (e) => {
-    setData(prev => ({...prev, photo: e}));
+  const handlePhoto = async(e) => {
+    const formData = new FormData();
+    formData.append('image', e)
+    try {
+      setData(p => ({...p, loadingImg:true}));
+      await uploadImage({
+        item: formData,
+        name: data.firstName || "Profile",
+        response : (res) => setData(p => ({...p, photo: res}))
+      });
+      setData(p => ({...p, loadingImg:false}));
+    } catch (error) {
+      console.log(error);
+    }
   };
   return(
     <SafeAreaView 
@@ -75,16 +86,20 @@ function AddContact({
           height:200,
           margin:5,
           borderWidth:1,
+          borderColor:'aqua',
           borderRadius:100
         }}>
-          <Image style={{
-            resizeMode:'cover',
-            borderRadius:100,
-            width:'100%',
-            height:'100%'
-          }} 
-          source={{uri: data.photo?.uri}}
-          />
+          {data.loadingImg ? 
+            <ActivityIndicator size={'large'} color="cyan" /> : 
+            <Image style={{
+              resizeMode:'cover',
+              borderRadius:100,
+              width:'100%',
+              height:'100%'
+            }} 
+            source={{uri: data.photo?.url}}
+            />
+          }
         </View>
         <TouchableOpacity onPress={()=>setupload(true)}>
           <Image 
@@ -111,6 +126,7 @@ function AddContact({
         <TextInput 
           keyboardType="number-pad"
           placeholder="Age"
+          maxLength={3}
           onChangeText={(e)=> 
             setData(p => ({...p,age:e}))}
           style={styleds.txtInput}
@@ -120,13 +136,15 @@ function AddContact({
           disabled={
             data.firstName === "" ||
             data.lastName === "" ||
-            data.age === ""} 
+            data.age === "" || 
+            data.photo === ""} 
           style={[styleds.btnSave,{
             backgroundColor:
             data.firstName === "" ||
             data.lastName === "" ||
-            data.age === "" ?
-            'grey' : 'green'
+            data.age === "" ||
+            data.photo === ""?
+            'grey' : '#00C0A3'
           }]}>
           <Text style={styleds.txtSave}> SAVE </Text>
         </TouchableOpacity>
@@ -152,6 +170,9 @@ const mapDispatchToProps = {
   addContact,
   closePopUp,
   getContact,
+  uploadImage
 }
+
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddContact);

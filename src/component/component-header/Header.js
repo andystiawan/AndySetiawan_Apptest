@@ -32,7 +32,13 @@ const styled = StyleSheet.create({
   },
   back:{
     fontSize:30,
-    color:'grey'
+    color:'aqua',
+    textShadowColor:'blue',
+    textShadowOffset:{
+      width: 1,
+      height: 1,
+    },
+    textShadowRadius: 1,
   },
   backContainer:{
     width:45,
@@ -40,6 +46,13 @@ const styled = StyleSheet.create({
   },
   title:{
     fontSize:24,
+    color:'cyan',
+    textShadowColor:'blue',
+    textShadowOffset:{
+      width: 1,
+      height: 1,
+    },
+    textShadowRadius: 1,
   }
 })
 

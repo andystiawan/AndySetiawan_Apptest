@@ -55,14 +55,13 @@ const UploadImage = ({visible, close, setResponse}) => {
   const captureImage = async (type) => {
     let options = {
       mediaType: type,
-      quality: 1,
       saveToPhotos: true,
+      includeBase64: true,
     };
     let isCameraPermitted = await requestCameraPermission();
     let isStoragePermitted = await requestExternalWritePermission();
     if (isCameraPermitted && isStoragePermitted) {
       launchCamera(options, (response) => {
-        let res = response.assets[0]
         if (response.didCancel) {
           alert('Kamera di batalkan');
           return;
@@ -75,13 +74,10 @@ const UploadImage = ({visible, close, setResponse}) => {
         } else if (response.errorCode == 'others') {
           alert(response.errorMessage);
           return;
+        }else{
+          const res = response?.assets[0].base64;
+          setResponse(res);
         }
-        const data = {
-          uri : res.uri,
-          type: res.type,
-          name: res.fileName.slice(49)
-        }
-        setResponse(data);
         close();
       });
     }
@@ -97,19 +93,15 @@ const UploadImage = ({visible, close, setResponse}) => {
     if (isCameraPermitted && isStoragePermitted) {
       launchImageLibrary(options, (response) => {
         if (response.didCancel) {
-          alert('Kamera di batalkan');
-          return;
-        } else if (response.errorCode == 'camera_unavailable') {
-          alert('Kamera tidak tersedia');
-          return;
-        } else if (response.errorCode == 'permission') {
-          alert('Kamera tidak di izinkan');
+          alert('upload batal');
           return;
         } else if (response.errorCode == 'others') {
           alert(response.errorMessage);
           return;
+        }else{
+          const res = response?.assets[0].base64;
+          setResponse(res);
         }
-        setResponse(response.assets[0]);
         close();
       });
     }
@@ -144,36 +136,35 @@ const UploadImage = ({visible, close, setResponse}) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 2,
     borderTopRightRadius:30,
     borderTopLeftRadius:30,
     backgroundColor: 'white',
     alignItems: 'center',
     position:'absolute',
     bottom: 0,
-    borderColor:'grey',
+    borderColor:'aqua',
     alignSelf:'center',
     borderWidth:1,
     width: '100%',
   },
   titleText: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
-    paddingVertical: 20,
+    paddingVertical: 5,
   },
   textStyle: {
-    fontSize: 20,
+    fontSize: 15,
     padding: 5,
-    color: 'white',
+    color: 'grey',
     textAlign: 'center',
   },
   buttonStyle: {
     alignItems: 'center',
-    backgroundColor: 'green',
-    padding: 1,
+    backgroundColor: 'cyan',
     borderRadius:10,
-    marginVertical: 5,
+    marginVertical: 4,
     width: '50%',
   },
 });

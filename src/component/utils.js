@@ -13,3 +13,4 @@ export const ALERT_MESSAGE = 'ALERT_MESSAGE';
 //URL
 
 export const CONTACT_API = 'https://simple-contact-crud.herokuapp.com/contact';
+export const UPLOAD_IMAGE = 'https://api.imgbb.com/1/upload?expiration=87000&key=460a8e6b181f25dcc1ed195aa5129f67'

@@ -8,7 +8,7 @@ const initialState = {
   list_contact : [],
   detail_contact : null,
   message : null,
-  show : false
+  show : false,
 };
 
 const ContactReducer = (state = initialState, action) => {

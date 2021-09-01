@@ -63,6 +63,15 @@ export const styleds = StyleSheet.create({
     width:'90%',
     backgroundColor:'#f2f2f2',
     borderWidth:0.5,
+    borderColor:'aqua',
+    borderBottomWidth:1,
+    marginVertical:10
+  },
+  txtInputEdit:{
+    borderRadius:10,
+    width:'90%',
+    borderWidth:0.5,
+    borderColor:'aqua',
     borderBottomWidth:1,
     marginVertical:10
   },
@@ -86,7 +95,7 @@ export const styleds = StyleSheet.create({
     borderRadius:10,
     minHeight:40,
     margin:5,
-    backgroundColor:'#3399ff'
+    backgroundColor:'cyan'
   },
   btnHapus:{
     alignItems:'center',
